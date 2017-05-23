@@ -51,8 +51,8 @@ check_vpn_connected() {
 shut_down_connections() {
     echo "[+] Disconnecting..."
      nmcli dev disconnect wlan1
-    #  nmcli dev disconnect wlan0
-    #  nmcli dev disconnect eth0
+     nmcli dev disconnect wlan0
+     nmcli dev disconnect eth0
     echo "[+] Done"
 }
 
@@ -69,8 +69,8 @@ blocking_http_https() {
 restablish_nw_i() {
     echo "[+] Restablishing network interfaces"
      nmcli dev connect wlan1
-    #  nmcli dev connect wlan0
-    #  nmcli dev connect eth0
+     nmcli dev connect wlan0
+     nmcli dev connect eth0
     echo "[+] Done"
 }
 
@@ -102,7 +102,7 @@ reconnect_vpn() {
         echo ""
         echo "[!] Was not possible to reconnect to the VPN"
         echo "[!] Iptables are still blocking ports 80 and 443 as security measure"
-        echo "[!] If you want to flush iptables just issue 'iptables --flush'"
+        echo "[!] If you want to h iptables just issue 'iptables --flush'"
         echo "[!] Exiting..."
         exit
     fi
@@ -110,7 +110,11 @@ reconnect_vpn() {
 
 flush_iptables() {
     echo "[+] Flushing iptables..."
-    iptables --flush
+    for p in "${PORTS_BLOCK[@]}"
+    do
+        echo "[+] Blocking port $p"
+        /sbin/iptables -D OUTPUT -p tcp --dport $p -j DROP
+    done
     echo "[+] Done"
     FLAG_VPN=1
 }
